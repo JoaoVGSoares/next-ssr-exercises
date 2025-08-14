@@ -1,17 +1,32 @@
-'use client';
-import React from 'react';
+"use client";
+import React from "react";
 
-import DATA from './data';
-import reducer from './reducer';
-import StoreItem from './StoreItem';
-import CheckoutFlow from './CheckoutFlow';
-import './styles.css';
+import DATA from "./data";
+import reducer from "./reducer";
+import StoreItem from "./StoreItem";
+import CheckoutFlow from "./CheckoutFlow";
+import "./styles.css";
+
+export const cartKey = "shoppingCart";
 
 function CheckoutExercise() {
-  const [items, dispatch] = React.useReducer(
-    reducer,
-    []
-  );
+  const [items, dispatch] = React.useReducer(reducer, null);
+
+  React.useEffect(() => {
+    const items = JSON.parse(window.localStorage.getItem(cartKey)) || [];
+
+    dispatch({
+      type: "initialize",
+      items,
+    });
+  }, []);
+
+  React.useEffect(() => {
+    if (!items) {
+      return;
+    }
+    window.localStorage.setItem(cartKey, JSON.stringify(items));
+  }, [items]);
 
   return (
     <>
@@ -25,7 +40,7 @@ function CheckoutExercise() {
               item={item}
               handleAddToCart={(item) => {
                 dispatch({
-                  type: 'add-item',
+                  type: "add-item",
                   item,
                 });
               }}
@@ -38,7 +53,7 @@ function CheckoutExercise() {
           taxRate={0.15}
           handleDeleteItem={(item) =>
             dispatch({
-              type: 'delete-item',
+              type: "delete-item",
               item,
             })
           }
